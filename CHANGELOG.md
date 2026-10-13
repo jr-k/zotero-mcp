@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.2] - 2026-10-13
+
+### Added
+
+- **Docker Compose configurations for development and cloud deployment.** Development builds the full local image with live source mounting; production pulls the versioned image from GHCR, persists MCP data, restarts automatically, and binds to loopback by default for use behind an authenticated TLS reverse proxy.
+
+### Security
+
+- **Local secrets and build artifacts are excluded from Docker build contexts.** The production container also drops Linux capabilities and prevents privilege escalation.
+
 ## [0.14.1] - 2026-10-07
 
 ### Added
