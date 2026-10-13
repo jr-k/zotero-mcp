@@ -17,10 +17,11 @@ services:
       - path: .env
         required: false
     environment:
+      MCP_TOKEN: "${MCP_TOKEN:?Set MCP_TOKEN in .env}"
       PYTHONDONTWRITEBYTECODE: "1"
       PYTHONUNBUFFERED: "1"
     ports:
-      # Keep the unauthenticated MCP endpoint behind a TLS/auth reverse proxy.
+      # Keep the bearer token encrypted in transit with a TLS reverse proxy.
       - "${MCP_BIND_ADDRESS:-127.0.0.1}:${MCP_PORT:-8000}:8000"
     volumes:
       - zotero-mcp-data:/home/app/.config/zotero-mcp

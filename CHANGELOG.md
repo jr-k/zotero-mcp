@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.14.3] - 2026-10-13
+
+### Security
+
+- **Remote HTTP transports can be protected with `MCP_TOKEN`.** When set, the server requires the same value as a bearer token and compares it in constant time. The production Docker Compose configuration requires this variable at startup; TLS is still required to encrypt it in transit.
+
 ## [0.14.2] - 2026-10-13
 
 ### Added

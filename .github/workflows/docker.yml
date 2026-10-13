@@ -35,7 +35,7 @@ jobs:
       - name: Validate Docker Compose files
         run: |
           docker compose -f docker-compose.yml config --quiet
-          docker compose -f docker-compose.prod.yml config --quiet
+          MCP_TOKEN=compose-validation-only docker compose -f docker-compose.prod.yml config --quiet
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4

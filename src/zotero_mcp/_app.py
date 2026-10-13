@@ -1,6 +1,7 @@
 """FastMCP application instance and server lifecycle."""
 
 import asyncio
+import hmac
 import json
 import logging
 import os
@@ -9,6 +10,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastmcp import FastMCP
+from fastmcp.server.auth import AccessToken, TokenVerifier
 
 from zotero_mcp._context import sync_context
 from zotero_mcp._version import __version__
@@ -122,5 +124,33 @@ class _ZoteroMCP(FastMCP):
         return lambda fn: register(sync_context(fn))
 
 
+class _EnvironmentTokenVerifier(TokenVerifier):
+    """Validate one opaque bearer token using a constant-time comparison."""
+
+    def __init__(self, token: str):
+        super().__init__(required_scopes=None)
+        self._token = token
+
+    async def verify_token(self, token: str) -> AccessToken | None:
+        if not hmac.compare_digest(token, self._token):
+            return None
+        return AccessToken(
+            token=token,
+            client_id="mcp-token",
+            scopes=[],
+            expires_at=None,
+        )
+
+
+def _token_auth_from_environment() -> TokenVerifier | None:
+    token = os.environ.get("MCP_TOKEN", "").strip()
+    return _EnvironmentTokenVerifier(token) if token else None
+
+
 # Create an MCP server (fastmcp 2.14+ no longer accepts `dependencies`)
-mcp = _ZoteroMCP("Zotero", version=__version__, lifespan=server_lifespan)
+mcp = _ZoteroMCP(
+    "Zotero",
+    version=__version__,
+    lifespan=server_lifespan,
+    auth=_token_auth_from_environment(),
+)
